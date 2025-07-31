@@ -57,7 +57,6 @@ for root, dirs, files in sorted(dir_of_raws.walk()):
         # case - the first measurement of the first experiment was missed. (needs the new sorting criterion to work)
         if current_measurement_index < last_measurement_index and current_measurement_index > 0:
             last_measurement_index = 0
-            print(primary_sorting_criterion, file_name)
             while last_measurement_index != current_measurement_index:
                 extracted_data[primary_sorting_criterion]["file_name"].append(None)
                 extracted_data[primary_sorting_criterion]["mean_diameter [\u03BCl]"].append(None)
@@ -79,14 +78,15 @@ for root, dirs, files in sorted(dir_of_raws.walk()):
             left_of_mean_diam = mean_diameter_line.index("\t") + 1
             right_of_mean_diam = mean_diameter_line.rindex(" ")
             extracted_data[primary_sorting_criterion]["mean_diameter [\u03BCl]"].append(float(mean_diameter_line[left_of_mean_diam:right_of_mean_diam]))
-print(extracted_data)
 # export csv here, plot OD log scale, cell size box plot together
 
+csv_dir = Path("raw_data")
+csv_dir.mkdir(exist_ok=True)
 plotting_data = defaultdict(list)
 wb = xlw.Workbook("OD.xlsx")
 for key in extracted_data.keys():
     medium_data = pl.DataFrame(extracted_data[key])
-    medium_data.write_csv(f"{key}.csv")
+    medium_data.write_csv(f"raw_data/{key}.csv")
     ws = wb.add_worksheet(key)
     od_file_names = medium_data[["file_name"]]
     od_file_names.write_excel(wb, ws, autofit = True, freeze_panes = (1,0))
@@ -105,6 +105,8 @@ wb.close()
 boxplot_data = list()
 labels = list()
 i = 0
+save_dir = Path("cell_sizes")
+save_dir.mkdir(exist_ok = True)
 for key in plotting_data.keys():
     data = plotting_data[key]
     boxplot_data.append(data)
@@ -116,7 +118,7 @@ for key in plotting_data.keys():
         plt.boxplot(boxplot_data, tick_labels = labels, showmeans = True)
         plt.xlabel("Strain")
         plt.ylabel("mean_diameter [\u03BCl]")
-        plt.savefig(f"{mediums[key[:3]]}.png")
+        plt.savefig(f"cell_sizes/{mediums[key[:3]]}.png")
         plt.close()
         boxplot_data.clear()
         labels.clear()

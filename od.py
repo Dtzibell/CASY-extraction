@@ -1,4 +1,5 @@
 import polars as pl
+from pathlib import Path
 import xlsxwriter as xlw
 import sys
 from collections import defaultdict
@@ -30,7 +31,8 @@ while True:
     except ValueError: # this still gives could not determine dtype for column 1, solution? Probably polars-sided
         print(plotting_data)
         break
-
+save_dir = Path("growth_curves")
+save_dir.mkdir(exist_ok = True)
 for idx, key in enumerate(plotting_data.keys()):
     average_growth_rate = sum(plotting_data[key]) / len(plotting_data[key])
     curve = [0.1 * 2 ** (i * average_growth_rate) for i in range(9)]
@@ -40,5 +42,5 @@ for idx, key in enumerate(plotting_data.keys()):
         plt.ylabel("OD (600 nm)")
         plt.legend()
         plt.yscale("log")
-        plt.savefig(f"OD_{mediums[key[:3]]}.png", bbox_inches = "tight")
+        plt.savefig(f"growth_curves/OD_{mediums[key[:3]]}.png", bbox_inches = "tight")
         plt.close()
