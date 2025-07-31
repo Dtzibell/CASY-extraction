@@ -110,7 +110,7 @@ save_dir.mkdir(exist_ok = True)
 for key in plotting_data.keys():
     data = plotting_data[key]
     boxplot_data.append(data)
-    labels.append(f"KWK{key[3:3+strain_index]}")
+    labels.append(f"{key[3:3+strain_index]}")
     x = [i+1 for _ in range(len(data))]
     plt.scatter(x, data, s = 90, c = "r", marker = ".", alpha = 0.4)
     i += 1
@@ -118,7 +118,7 @@ for key in plotting_data.keys():
         plt.boxplot(boxplot_data, tick_labels = labels, showmeans = True)
         plt.xlabel("Strain")
         plt.ylabel("mean_diameter [\u03BCl]")
-        plt.savefig(f"cell_sizes/{mediums[key[:3]]}.png")
+        plt.savefig(f"cell_sizes/{mediums[key[:3]]}.png", bbox_inches = "tight")
         plt.close()
         boxplot_data.clear()
         labels.clear()

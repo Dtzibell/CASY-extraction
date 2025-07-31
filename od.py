@@ -29,14 +29,13 @@ while True:
     
         sheet_id += 1
     except ValueError: # this still gives could not determine dtype for column 1, solution? Probably polars-sided
-        print(plotting_data)
         break
 save_dir = Path("growth_curves")
 save_dir.mkdir(exist_ok = True)
 for idx, key in enumerate(plotting_data.keys()):
     average_growth_rate = sum(plotting_data[key]) / len(plotting_data[key])
     curve = [0.1 * 2 ** (i * average_growth_rate) for i in range(9)]
-    plt.plot(list(range(9)), curve, label = f"KWK{key[3]}")
+    plt.plot(list(range(9)), curve, label = f"{key[3:3+strain_name_length]}")
     if (idx + 1) % 3 == 0:
         plt.xlabel("time [h]")
         plt.ylabel("OD (600 nm)")
