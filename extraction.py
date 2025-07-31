@@ -12,6 +12,7 @@ mpl.rc("boxplot.flierprops", marker = ".", markersize = 5, markerfacecolor = "k"
 mpl.rc("boxplot.medianprops", color = "b")
 
 measurement_no = int(sys.argv[1])
+strain_index = int(sys.argv[2])
 
 mediums = {
         "GMM": "1% GMM",
@@ -25,7 +26,6 @@ dir_of_raws = Path("Datasets")
 re_diam = re.compile("mean diameter.*range 2.*", re.IGNORECASE)
 
 # Primary sorting is likely the medium, secondary is the strain
-strain_index = int(input("Enter the number of symbols determining the strain: "))
 extracted_data = defaultdict(lambda: defaultdict(list))
 last_measurement_index = -1 # necessary for comparison with index of first measurement
 
