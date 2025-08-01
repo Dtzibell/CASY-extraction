@@ -1,4 +1,5 @@
 from pathlib import Path
+from numpy import poly, polyder
 import polars as pl
 from collections import defaultdict
 import re
@@ -7,6 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 from polars.functions.lazy import last
 import xlsxwriter as xlw
+from copy import deepcopy, copy
 
 mpl.rc("boxplot.flierprops", marker = ".", markersize = 5, markerfacecolor = "k")
 mpl.rc("boxplot.medianprops", color = "b")
@@ -83,6 +85,7 @@ for root, dirs, files in sorted(dir_of_raws.walk()):
 csv_dir = Path("raw_data")
 csv_dir.mkdir(exist_ok=True)
 plotting_data = defaultdict(list)
+media = 0
 wb = xlw.Workbook("OD.xlsx")
 for key in extracted_data.keys():
     medium_data = pl.DataFrame(extracted_data[key])
@@ -92,15 +95,16 @@ for key in extracted_data.keys():
     od_file_names.write_excel(wb, ws, autofit = True, freeze_panes = (1,0))
     ws.write("B1", "OD (600 nm)")
     starting_index = 0
-    for i in range(medium_data.height):
-        if (i + 1) % measurement_no == 0 and i != 0:
-            cell_sizes = (medium_data[starting_index : i+1].select(pl.col("file_name"), pl.col("mean_diameter [\u03BCl]"))
-                              .with_row_index("time [h]").drop_nulls().drop_nans())
-            strain = cell_sizes["file_name"][-1][:3+strain_index]
-            average_cell_size = cell_sizes["mean_diameter [\u03BCl]"].sum() / cell_sizes["mean_diameter [\u03BCl]"].len()
-            plotting_data[strain].append(average_cell_size)
-            starting_index = i + 1
+    i = 0
+    for frame in medium_data.iter_slices(measurement_no):
+        cell_sizes = frame.with_row_index("time [h]").drop_nulls().drop_nans()
+        strain = cell_sizes["file_name"][-1][:3+strain_index]
+        average_cell_size = cell_sizes["mean_diameter [\u03BCl]"].sum() / cell_sizes["mean_diameter [\u03BCl]"].len()
+        plotting_data[strain].append(average_cell_size)
+
+    media += 1
 wb.close()
+replicate_no = medium_data.height // media // measurement_no
 
 boxplot_data = list()
 labels = list()
@@ -114,7 +118,7 @@ for key in plotting_data.keys():
     x = [i+1 for _ in range(len(data))]
     plt.scatter(x, data, s = 90, c = "r", marker = ".", alpha = 0.4)
     i += 1
-    if i % 3 == 0:
+    if i % replicate_no == 0:
         plt.boxplot(boxplot_data, tick_labels = labels, showmeans = True)
         plt.xlabel("Strain")
         plt.ylabel("mean_diameter [\u03BCl]")
