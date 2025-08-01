@@ -8,7 +8,7 @@
 - If you dont have uv, in the command line navigate to the folder of installation and run: 
 ```pip install uv && cd CASY-extraction && uv sync```. Otherwise skip the installation of uv.
 
-The repository comes with a dummy dataset. For demo puposes, run ```uv run extraction.py 8 1 && uv run od.py 8 1``` or directly look at the data produced by the code within the repository's directories.
+The repository comes with a dummy dataset for demo puposes. Run ```uv run extraction.py 8 4 && uv run od.py 8 4``` to get an overview of what the scripts outputs are.
 
 # Naming consensus:
 The programme runs on files with the following naming patterns:
