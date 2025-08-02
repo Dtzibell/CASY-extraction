@@ -1,14 +1,12 @@
 from pathlib import Path
-from numpy import poly, polyder
 import polars as pl
 from collections import defaultdict
 import re
 import sys
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-from polars.functions.lazy import last
 import xlsxwriter as xlw
-from copy import deepcopy, copy
+import numpy as np
 
 mpl.rc("boxplot.flierprops", marker = ".", markersize = 5, markerfacecolor = "k")
 mpl.rc("boxplot.medianprops", color = "b")
@@ -97,7 +95,7 @@ for key in extracted_data.keys():
     starting_index = 0
     i = 0
     for frame in medium_data.iter_slices(measurement_no):
-        cell_sizes = frame.with_row_index("time [h]").drop_nulls().drop_nans()
+        cell_sizes = frame[2:].with_row_index("time [h]").drop_nulls().drop_nans()
         strain = cell_sizes["file_name"][-1][:3+strain_index]
         average_cell_size = cell_sizes["mean_diameter [\u03BCl]"].sum() / cell_sizes["mean_diameter [\u03BCl]"].len()
         plotting_data[strain].append(average_cell_size)
@@ -112,18 +110,34 @@ i = 0
 save_dir = Path("cell_sizes")
 save_dir.mkdir(exist_ok = True)
 print(plotting_data)
+fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, height_ratios = [1,0.1]) #https://matplotlib.org/stable/gallery/subplots_axes_and_figures/broken_axis.html
+fig.subplots_adjust(hspace = 0.1)
 for key in plotting_data.keys():
     data = plotting_data[key]
     boxplot_data.append(data)
     print(boxplot_data)
     labels.append(f"{key[3:3+strain_index]}")
     x = [i+1 for _ in range(len(data))]
-    plt.scatter(x, data, s = 90, c = "r", marker = ".", alpha = 0.4)
+    ax1.scatter(x, data, s = 90, c = "r", marker = ".", alpha = 0.4)
     i += 1
     if i % strain_no == 0:
-        plt.boxplot(boxplot_data, tick_labels = labels, showmeans = True)
-        plt.xlabel("Strain")
-        plt.ylabel("mean_diameter [\u03BCl]")
+        ax1.boxplot(boxplot_data, tick_labels = labels)
+        ax2.boxplot(boxplot_data, tick_labels = labels)
+        ax1.set_ylim(4.4, 5.4)
+        ax2.set_ylim(0, 0.1)
+        yticks = np.linspace(4.4, 5.4, 11)
+        ax1.set_yticks(yticks)
+        ax2.set_yticks([0])
+        ax1.spines.bottom.set_visible(False)
+        ax2.spines.top.set_visible(False)
+        ax1.tick_params(bottom = False)
+        d = 0.5
+        kwargs = dict(marker=[(-1, -d), (1, d)], markersize=12,
+              linestyle="none", color='k', mec='k', mew=1, clip_on=False)
+        ax1.plot([0, 1], [0, 0], transform=ax1.transAxes, **kwargs)
+        ax2.plot([0, 1], [1, 1], transform=ax2.transAxes, **kwargs) #https://matplotlib.org/stable/gallery/subplots_axes_and_figures/broken_axis.html
+        fig.supxlabel("Strain")
+        fig.supylabel("mean_diameter [\u03BCl]")
         plt.savefig(f"cell_sizes/{mediums[key[:3]]}.png", bbox_inches = "tight")
         plt.close()
         boxplot_data.clear()
