@@ -1,0 +1,7 @@
+!OD1.xlsx
+*.xlsx
+*.csv
+raw_data/
+cell_sizes/
+OD/
+*.png

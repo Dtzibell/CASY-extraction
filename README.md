@@ -1,5 +1,4 @@
-## Script for cell mean diameter extraction from CASY .raw files and automation
-## of OD plotting.
+## CASY extraction and OD plotting script
 
 ## Quick initiation:
 
