@@ -1,11 +1,11 @@
 from pathlib import Path
 
 medium_dict = {
-        # "Et": "ETH",
-        # "Ga": "GAL",
-        # "Gl": "GLU",
-        # "G": "GMM",
-        # "Sm": "SMM"
+         "Et": "ETH",
+         "Ga": "GAL",
+         "Gl": "GLU",
+         "Gm": "GMM",
+         "Sm": "SMM"
         }
 strain_number_dict = {
         "1":"AP025",
@@ -19,7 +19,10 @@ for root, dirs, files in Path("Datasets/AP GC 1").walk():
         file_stem = file.stem
         medium = file_stem[:1]
         try:
-            new_name = Path(root) / Path(file_stem[:3]+strain_number_dict[file_stem[3]]+file_stem[-1]+".raw")
+            # if measurement indexing starts at 0
+            # new_name = Path(root) / Path(medium_dict[file_stem[:2]]+strain_number_dict[file_stem[2]]+file_stem[-1]+".raw")
+            # if measurement indexing starts at 1
+            # new_name = Path(root) / Path(medium_dict[file_stem[:2]]+strain_number_dict[file_stem[2]]+str(int(file_stem[-1]) - 1)+".raw")
             file.rename(new_name)
         except KeyError:
             pass
