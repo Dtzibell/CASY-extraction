@@ -36,6 +36,7 @@ for root, dirs, files in sorted(dir_of_raws.walk()):
         file_path = Path(root) / Path(file)
         file_name = file_path.stem
         current_measurement_index = int(file_name[-1])
+        print(file_name)
         
         # case - a measurement was missed in the middle of the experiment
         if current_measurement_index > last_measurement_index:
@@ -81,7 +82,6 @@ for root, dirs, files in sorted(dir_of_raws.walk()):
             right_of_mean_diam = mean_diameter_line.rindex(" ")
             extracted_data[primary_sorting_criterion]["mean_diameter [\u03BCl]"].append(float(mean_diameter_line[left_of_mean_diam:right_of_mean_diam]))
 # export csv here, plot OD log scale, cell size box plot together
-
 csv_dir = Path("raw_data")
 csv_dir.mkdir(exist_ok=True)
 plotting_data = defaultdict(list)
@@ -104,21 +104,23 @@ for key in extracted_data.keys():
 
     media += 1
 wb.close()
-replicate_no = medium_data.height // media // measurement_no
+strain_no = len(plotting_data.keys()) / media
 
 boxplot_data = list()
 labels = list()
 i = 0
 save_dir = Path("cell_sizes")
 save_dir.mkdir(exist_ok = True)
+print(plotting_data)
 for key in plotting_data.keys():
     data = plotting_data[key]
     boxplot_data.append(data)
+    print(boxplot_data)
     labels.append(f"{key[3:3+strain_index]}")
     x = [i+1 for _ in range(len(data))]
     plt.scatter(x, data, s = 90, c = "r", marker = ".", alpha = 0.4)
     i += 1
-    if i % replicate_no == 0:
+    if i % strain_no == 0:
         plt.boxplot(boxplot_data, tick_labels = labels, showmeans = True)
         plt.xlabel("Strain")
         plt.ylabel("mean_diameter [\u03BCl]")
