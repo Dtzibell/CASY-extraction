@@ -23,6 +23,7 @@ for root, dirs, files in Path("Datasets/AP GC 1").walk():
             # new_name = Path(root) / Path(medium_dict[file_stem[:2]]+strain_number_dict[file_stem[2]]+file_stem[-1]+".raw")
             # if measurement indexing starts at 1
             # new_name = Path(root) / Path(medium_dict[file_stem[:2]]+strain_number_dict[file_stem[2]]+str(int(file_stem[-1]) - 1)+".raw")
+            print(new_name)
             file.rename(new_name)
         except KeyError:
             pass

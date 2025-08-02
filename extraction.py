@@ -34,7 +34,6 @@ for root, dirs, files in sorted(dir_of_raws.walk()):
         file_path = Path(root) / Path(file)
         file_name = file_path.stem
         current_measurement_index = int(file_name[-1])
-        print(file_name)
         
         # case - a measurement was missed in the middle of the experiment
         if current_measurement_index > last_measurement_index:
@@ -109,18 +108,20 @@ labels = list()
 i = 0
 save_dir = Path("cell_sizes")
 save_dir.mkdir(exist_ok = True)
-print(plotting_data)
-fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, height_ratios = [1,0.1]) #https://matplotlib.org/stable/gallery/subplots_axes_and_figures/broken_axis.html
-fig.subplots_adjust(hspace = 0.1)
+x = list()
+y = list()
 for key in plotting_data.keys():
     data = plotting_data[key]
     boxplot_data.append(data)
-    print(boxplot_data)
     labels.append(f"{key[3:3+strain_index]}")
-    x = [i+1 for _ in range(len(data))]
-    ax1.scatter(x, data, s = 90, c = "r", marker = ".", alpha = 0.4)
+    print(labels)
+    x.extend([i+1 for _ in range(len(data))])
+    y.extend(data)
     i += 1
     if i % strain_no == 0:
+        fig, (ax1, ax2) = plt.subplots(2, 1, sharex = True, height_ratios = [1,0.1]) #https://matplotlib.org/stable/gallery/subplots_axes_and_figures/broken_axis.html
+        ax1.scatter(x, y, s = 90, c = "r", marker = ".", alpha = 0.4)
+        fig.subplots_adjust(hspace = 0.1)
         ax1.boxplot(boxplot_data, tick_labels = labels)
         ax2.boxplot(boxplot_data, tick_labels = labels)
         ax1.set_ylim(4.4, 5.4)
@@ -138,8 +139,10 @@ for key in plotting_data.keys():
         ax2.plot([0, 1], [1, 1], transform=ax2.transAxes, **kwargs) #https://matplotlib.org/stable/gallery/subplots_axes_and_figures/broken_axis.html
         fig.supxlabel("Strain")
         fig.supylabel("mean_diameter [\u03BCl]")
-        plt.savefig(f"cell_sizes/{mediums[key[:3]]}.png", bbox_inches = "tight")
-        plt.close()
+        fig.savefig(f"cell_sizes/{mediums[key[:3]]}.png", bbox_inches = "tight")
+        plt.close(fig)
         boxplot_data.clear()
         labels.clear()
+        x.clear()
+        y.clear()
         i = 0
