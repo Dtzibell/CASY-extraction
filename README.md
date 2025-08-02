@@ -3,7 +3,7 @@
 ## Quick initiation:
 
 - Clone the repository (command line): 
-```git clone --depth 1 https://github.com/Dtzibell/CASY-extraction```
+```git clone --depth 1 --branch v0.1 https://github.com/Dtzibell/CASY-extraction```
 
 - If you dont have uv, in the command line navigate to the folder of installation and run: 
 ```pip install uv && cd CASY-extraction && uv sync```. Otherwise skip the installation of uv.
