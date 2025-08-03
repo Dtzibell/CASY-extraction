@@ -138,7 +138,7 @@ for key in plotting_data.keys():
         ax1.plot([0, 1], [0, 0], transform=ax1.transAxes, **kwargs)
         ax2.plot([0, 1], [1, 1], transform=ax2.transAxes, **kwargs) #https://matplotlib.org/stable/gallery/subplots_axes_and_figures/broken_axis.html
         fig.supxlabel("Strain")
-        fig.supylabel("mean_diameter [\u03BCl]")
+        fig.supylabel("mean_diameter [\u03BCm]")
         fig.savefig(f"cell_sizes/{mediums[key[:3]]}.png", bbox_inches = "tight")
         plt.close(fig)
         boxplot_data.clear()
