@@ -1,12 +1,22 @@
 ## CASY extraction and OD plotting script
 
+A script to help retrieve a first look at your growth curve experiment. :)
+
 ## Quick initiation:
 
 - Clone the repository (command line): 
 ```git clone --depth 1 --branch v0.1 https://github.com/Dtzibell/CASY-extraction```
 
 - If you dont have uv, in the command line navigate to the folder of installation and run: 
-```pip install uv && cd CASY-extraction && uv sync```. Otherwise skip the installation of uv.
+```pip install uv```. uv is a modern package and project manager for python.
+
+- Navigate to the script's directory and set up your virtual environment:
+    - for Windows (cmd.exe):
+```cd CASY-extraction && .venv/Scripts/activate.bat && uv sync```
+    - or powershell:
+```cd CASY-extraction && .venv/Scripts/activate.ps1 && uv sync```
+    - MacOS:
+```cd CASY-extraction && .venv/bin/activate && uv sync```
 
 The repository comes with a dummy dataset for demo puposes. Run 
 ```uv run extraction.py 8 4 && uv run od.py 8 4``` to get an overview of what 

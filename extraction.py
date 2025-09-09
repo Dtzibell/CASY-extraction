@@ -73,7 +73,7 @@ for root, dirs, files in sorted(dir_of_raws.walk()):
         with open(file_path) as file:
             lines = file.read()
             extracted_data[primary_sorting_criterion]["file_name"].append(file_name)
-            mean_diameter_line = re_diam.search(lines).group()
+            mean_diameter_line = re_diam.search(lines).group() # pyright marks .group() as not a function of None because search returns None if no match is found.
             # finds where the mean diameter value begins and ends
             left_of_mean_diam = mean_diameter_line.index("\t") + 1
             right_of_mean_diam = mean_diameter_line.rindex(" ")
@@ -114,7 +114,6 @@ for key in plotting_data.keys():
     data = plotting_data[key]
     boxplot_data.append(data)
     labels.append(f"{key[3:3+strain_index]}")
-    print(labels)
     x.extend([i+1 for _ in range(len(data))])
     y.extend(data)
     i += 1
